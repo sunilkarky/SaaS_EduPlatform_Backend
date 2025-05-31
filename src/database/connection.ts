@@ -1,4 +1,4 @@
-import { Sequelize } from "sequelize";  //{} class ho so initializz and orm
+import { Sequelize } from "sequelize-typescript";  //{} class ho so initializz and orm
 import { envConfig } from "../config/config";
 
 const sequelize= new Sequelize({
@@ -7,7 +7,8 @@ const sequelize= new Sequelize({
     password:envConfig.password,
     host:envConfig.host,
     dialect:"mysql" , //which db oracle msaccess
-    port:Number(envConfig.port)
+    port:Number(envConfig.port),
+    models:[__dirname+'/models'] //location dinu parxa to access model
 })
 
 sequelize.authenticate()
@@ -17,3 +18,11 @@ sequelize.authenticate()
 .catch((error)=>{
     console.log(error)
 })
+
+//migrate //push
+sequelize.sync({force:false})
+.then(()=>{
+    console.log("Migration success") 
+})
+
+export default sequelize
