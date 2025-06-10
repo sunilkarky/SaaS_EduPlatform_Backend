@@ -3,6 +3,7 @@
 import { Request, Response } from 'express'
 import User from '../../../database/models/user.model'
 import bcrypt from "bcrypt"
+import jwt from 'jsonwebtoken'
 
 class AuthController{
     static async registerUser (req:Request,res:Response){
@@ -29,6 +30,46 @@ class AuthController{
             message:"User registered successfully",
             success:true
         })
+    }
+    static async loginUser(req:Request,res:Response){
+        if (req.body== undefined){
+            res.status(400).json({
+                message:"No data in body"
+            })
+            return
+        }
+        const {email,password}=req.body
+        if(!email || !password){
+            res.status(400).json({
+                message:"Please provide email and password"
+            })
+            return
+        }
+        const userExist=await User.findAll({
+            where:{
+                email:email
+        }
+        })
+        if(userExist.length == 0){
+            res.status(404).json({
+                message:"User with that email doesn't exist"
+            })
+            return
+        }
+        const isValid=bcrypt.compareSync(password,userExist[0].password)
+        if(!isValid){
+             res.status(403).json({
+                message:"Invalid email or password credentials"
+            })
+            return
+        }
+         const token =  jwt.sign({id :userExist[0].id,name:"Sunil"},'iamsecretkey',{
+            expiresIn : "30d"
+           })
+            res.status(200).json({
+                token : token, 
+                message : "Logged in success"
+            })
     }
 }
 export default AuthController
