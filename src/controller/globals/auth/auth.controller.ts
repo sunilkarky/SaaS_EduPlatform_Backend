@@ -21,6 +21,17 @@ class AuthController{
             })
             return
         }
+        const [data]  =await User.findAll({
+            where  :{
+                email:email
+            }
+        })
+        if(data){
+            res.status(400).json({
+                message:"User with that email already exists"
+            })
+            return
+        }
         await User.create({
             username:userName,
             email:email,

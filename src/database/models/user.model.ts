@@ -26,7 +26,11 @@ class User extends Model{  //model class bata inherit so we can use Model to cre
     })
     declare password:string
     @Column({
-        type:DataType.STRING
+        type:DataType.STRING,
+        unique: {
+            name: "unique_email",
+            msg: "Email already exists"
+        }
     })
     declare email:string
     @Column({
