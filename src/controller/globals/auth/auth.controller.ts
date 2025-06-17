@@ -74,7 +74,7 @@ class AuthController{
             })
             return
         }
-         const token =  jwt.sign({id :userExist[0].id,name:"Sunil"},'iamsecretkey',{
+         const token =  jwt.sign({id :userExist[0].id},'iamsecretkey',{
             expiresIn : "30d"
            })
             res.status(200).json({

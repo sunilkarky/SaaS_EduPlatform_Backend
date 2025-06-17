@@ -2,8 +2,15 @@ import { Request, Response } from "express"
 import sequelize from "../../database/connection"
 import generateRandomNumber from '../../services/randomNumberGenerate'
 
+interface IExtendedRequest extends Request{
+    user?:{
+        id:string
+    }
+}
+
 class instituteController{
-     static async createInstitute(req:Request,res:Response){
+     static async createInstitute(req:IExtendedRequest,res:Response){
+      // console.log(req?.user)
         const {instituteName,institutePhoneNumber,instituteEmail,instituteAddress}=req.body
         const instituteVatNo=req.body.instituteVatNo ||null
         const institutePanNo=req.body.institutePanNo || null
@@ -53,6 +60,18 @@ class instituteController{
              message:"Institute Created successfully"
         })
     }
-    
+    static async createTeacher(req:Request,res:Response){
+      const{teacherName,teacherEmail,teacherPhoneNumber,teacherAddress}=req.body
+      if(req.body==undefined){
+        res.status(400).json({
+          message:"Please provide body"
+        })
+        return
+      }
+      await sequelize.query(`CREATE TABLE TEACHER(
+        id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+        )`)
+
+    }
 }
 export default instituteController
