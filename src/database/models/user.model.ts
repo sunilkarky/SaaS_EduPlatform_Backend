@@ -38,6 +38,10 @@ class User extends Model{  //model class bata inherit so we can use Model to cre
         defaultValue:'student'
     })
     declare role:string
+    @Column({
+        type:DataType.STRING
+    })
+    declare currentInstituteNumber : string
 }
 
 export default User

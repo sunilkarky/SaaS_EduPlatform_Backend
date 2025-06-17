@@ -1,12 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from 'jsonwebtoken'
 import User from "../database/models/user.model";
+import { IExtendedRequest } from "./type";
 
-interface IExtendedRequest extends Request{
-    user?:{
-        id:string
-    }
-}
 // interface success{
 //     id:string,
 //     iat:number,
@@ -32,8 +28,6 @@ class MiddleWare{
                 return
             }
         const {id}=success
-        console.log(id)
-        
         const userData=await User.findAll({
             where:{
                 id:id
@@ -45,7 +39,6 @@ class MiddleWare{
             })
             return
         }
-
         req.user=userData[0]
         next()
         })
