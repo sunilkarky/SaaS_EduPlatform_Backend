@@ -31,8 +31,10 @@ class MiddleWare{
         const userData=await User.findAll({
             where:{
                 id:id
-                }
+                },
+                attributes:['id','currentInstituteNumber','role']
             })
+            
         if(userData.length==0){
             res.status(403).json({
                 message:"User with that id doesn't exist ,Invalid token"

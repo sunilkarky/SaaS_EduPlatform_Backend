@@ -50,7 +50,6 @@ class instituteController{
     if(req.user){
       const id=req?.user?.id
       //user-institute history data of all institute created by user
-      try{
 
         await sequelize.query(`CREATE TABLE IF NOT EXISTS user_institute(
           id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -68,9 +67,7 @@ class instituteController{
               id:id
             }
           })
-        }  catch(e){
-          console.log(e,"error here")
-        }  
+        
       req.instituteNumber=instituteNumber
       next()
     }
