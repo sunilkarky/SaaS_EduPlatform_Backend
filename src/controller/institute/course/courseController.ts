@@ -38,7 +38,7 @@ class courseController{
         res.status(200).json({
             message: "Courses fetched successfully",
             data: courses
-        });
+        })
     }
     static async getSingleCourse(req:IExtendedRequest,res:Response){
         const instituteNumber=req.user?.currentInstituteNumber
