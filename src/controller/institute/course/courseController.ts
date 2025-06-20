@@ -5,6 +5,7 @@ import sequelize from "../../../database/connection";
 class courseController{
     static async createCourse(req:IExtendedRequest,res:Response){
         const instituteNumber = req.user?.currentInstituteNumber;
+        const courseThumbnail=req.file ? req.file.path:null
         if(req.body==undefined){
         res.status(400).json({
           message:"Please provide body"
@@ -19,9 +20,9 @@ class courseController{
             return
         }
         const [course] =await sequelize.query(`INSERT INTO course_${instituteNumber}(
-            courseName, coursePrice, courseDuration, courseLevel, courseDescription
-        ) VALUES (?,?,?,?,?)`, {
-            replacements: [courseName, coursePrice, courseDuration, courseLevel, courseDescription]
+            courseName, coursePrice, courseDuration, courseLevel, courseDescription,courseThumbnail
+        ) VALUES (?,?,?,?,?,?)`, {
+            replacements: [courseName, coursePrice, courseDuration, courseLevel, courseDescription,courseThumbnail]
         })
 
         res.status(201).json({

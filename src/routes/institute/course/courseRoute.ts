@@ -2,11 +2,17 @@ import express, { Router } from "express";
 import MiddleWare from "../../../middleware/middleware";
 import courseController from "../../../controller/institute/course/courseController";
 import catchAsync from "../../../services/catchAsync";
+import { multer, storage } from "../../../middleware/multerConfig";
+
 
 const router:Router=express.Router()
 
+const upload =multer({
+    storage:storage
+})
+
 router.route('/')
-.post(catchAsync(MiddleWare.isLoggedIn),catchAsync(courseController.createCourse))
+.post(catchAsync(MiddleWare.isLoggedIn),upload.single('courseThumbnail'),catchAsync(courseController.createCourse))
 .get(catchAsync(MiddleWare.isLoggedIn),catchAsync(courseController.getAllCourses))
 
 router.route("/:id").get(catchAsync(MiddleWare.isLoggedIn),catchAsync(courseController.getSingleCourse))
