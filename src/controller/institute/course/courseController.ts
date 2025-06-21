@@ -5,7 +5,14 @@ import sequelize from "../../../database/connection";
 class courseController{
     static async createCourse(req:IExtendedRequest,res:Response){
         const instituteNumber = req.user?.currentInstituteNumber;
-        const courseThumbnail=req.file ? req.file.path:null
+        if(!req.file){
+            res.status(400).json({
+                message:"Please upload courseThumbnail"
+            })
+            return
+        }
+        // const courseThumbnail=req.file ? req.file.filename:null
+        const courseThumbnail=req.file?req.file.path :null
         if(req.body==undefined){
         res.status(400).json({
           message:"Please provide body"

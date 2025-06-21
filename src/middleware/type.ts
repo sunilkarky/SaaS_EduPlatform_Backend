@@ -7,6 +7,5 @@ export interface IExtendedRequest extends Request{
         role : string, 
         currentInstituteNumber:string
        }, 
-       instituteNumber ?: number | string
-      
+       instituteNumber ?: number 
 }

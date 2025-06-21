@@ -11,11 +11,13 @@ const storage=multer.diskStorage({
       cb(new Error("Invalid file format only support png , jpg , jpeg"), false);
       return;
     }
-    cb(null, "./uploads");
+    cb(null, "./src/uploads");
   },
     filename:function(req:Request,file:Express.Multer.File,cb:any){
         cb(null,Date.now()+'_'+file.originalname)
-    }
+    },
+    
+    
     
 })
 
