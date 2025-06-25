@@ -2,10 +2,10 @@ import express, { Router } from "express";
 import MiddleWare from "../../../middleware/middleware";
 import courseController from "../../../controller/institute/course/courseController";
 import catchAsync from "../../../services/catchAsync";
-// import { multer, storage } from "../../../middleware/multerConfig";
+import { multer, storage } from "../../../middleware/multerConfig";
 
-import multer from "multer";
-import { cloudinary,storage } from "../../../services/cloudinaryConfig";
+// import multer from "multer";
+// import { cloudinary,storage } from "../../../services/cloudinaryConfig";
 
 
 const router:Router=express.Router()

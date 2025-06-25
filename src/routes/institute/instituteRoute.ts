@@ -10,6 +10,7 @@ router.route("/").post(
     catchAsync(instituteController.createInstitute),
     catchAsync(instituteController.createTeacher),
     catchAsync(instituteController.createStudent),
+    catchAsync(instituteController.createCategory),
     catchAsync(instituteController.createCourse)
 )
 

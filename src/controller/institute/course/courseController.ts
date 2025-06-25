@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { IExtendedRequest } from "../../../middleware/type";
 import sequelize from "../../../database/connection";
+import { QueryTypes } from "sequelize";
 
 class courseController{
     static async createCourse(req:IExtendedRequest,res:Response){
@@ -11,25 +12,26 @@ class courseController{
             })
             return
         }
-        // const courseThumbnail=req.file ? req.file.filename:null
-        const courseThumbnail=req.file?req.file.path :null
+        const courseThumbnail=req.file ? req.file.filename:null
+        // const courseThumbnail=req.file?req.file.path :null
         if(req.body==undefined){
         res.status(400).json({
           message:"Please provide body"
         })
         return
       }
-        const {courseName,coursePrice,courseDuration,courseLevel,courseDescription}=req.body
-        if(!courseName || !coursePrice || !courseDuration || !courseLevel || !courseDescription){
+        const {courseName,coursePrice,courseDuration,courseLevel,courseDescription,categoryId}=req.body
+        if(!courseName || !coursePrice || !courseDuration || !courseLevel || !courseDescription || !categoryId){
             res.status(400).json({
-                message:"Please provide all fields: courseName, coursePrice, courseDuration, courseLevel, courseDescription"
+                message:"Please provide all fields: courseName, coursePrice, courseDuration, courseLevel, courseDescription, categoryId"
             })
             return
         }
         const [course] =await sequelize.query(`INSERT INTO course_${instituteNumber}(
-            courseName, coursePrice, courseDuration, courseLevel, courseDescription,courseThumbnail
-        ) VALUES (?,?,?,?,?,?)`, {
-            replacements: [courseName, coursePrice, courseDuration, courseLevel, courseDescription,courseThumbnail]
+            courseName, coursePrice, courseDuration, courseLevel, courseDescription,courseThumbnail, categoryId
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)`, {
+            type:QueryTypes.INSERT,
+            replacements: [courseName, coursePrice, courseDuration, courseLevel, courseDescription,courseThumbnail, categoryId]
         })
 
         res.status(201).json({
@@ -40,8 +42,9 @@ class courseController{
     }
     static async getAllCourses(req:IExtendedRequest,res:Response){
         const instituteNumber = req.user?.currentInstituteNumber;
-        console.log(instituteNumber)
-        const courses = await sequelize.query(`SELECT * FROM course_${instituteNumber}`
+        const courses = await sequelize.query(`SELECT * FROM course_${instituteNumber}  JOIN category_${instituteNumber} ON course_${instituteNumber}.categoryId =  category_${instituteNumber}.id `,{
+            type: QueryTypes.SELECT
+        }
         );
         res.status(200).json({
             message: "Courses fetched successfully",
@@ -58,12 +61,13 @@ class courseController{
             return
         }
         //check course exists
-        const [courseExist]=await sequelize.query(`SELECT * FROM COURSE_${instituteNumber} WHERE id=?`,{
+        const courseExist=await sequelize.query(`SELECT * FROM COURSE_${instituteNumber} WHERE id=?`,{
+            type:QueryTypes.SELECT,
             replacements:[courseId]
         })
         if(courseExist.length==0){
             res.status(404).json({
-                message:"No course with that id.",
+                message:"No course with that id hai ta.",
             })
             return
         }
@@ -82,7 +86,8 @@ class courseController{
             return
         }
         //check course exists
-        const [courseExist]=await sequelize.query(`SELECT * FROM COURSE_${instituteNumber} WHERE id=?`,{
+        const courseExist=await sequelize.query(`SELECT * FROM COURSE_${instituteNumber} WHERE id=?`,{
+            type:QueryTypes.SELECT,
             replacements:[courseId]
         })
         if(courseExist.length==0){
@@ -92,6 +97,7 @@ class courseController{
             return
         }
         await sequelize.query(`DELETE FROM course_${instituteNumber} WHERE id=?`,{
+            type:QueryTypes.DELETE,
             replacements:[courseId]
         })
         res.status(200).json({
