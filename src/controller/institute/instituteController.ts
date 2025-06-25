@@ -3,6 +3,7 @@ import sequelize from "../../database/connection"
 import generateRandomNumber from '../../services/randomNumberGenerate'
 import { IExtendedRequest } from "../../middleware/type"
 import User from "../../database/models/user.model"
+import { categories } from "../../seed"
 
 
 
@@ -100,6 +101,8 @@ class instituteController{
         teacherExpertise varchar(255),
         joinedDate DATE,
         salary VARCHAR(255),
+        teacherImage VARCHAR(255),
+        teacherPassword VARCHAR(255),
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )`)
@@ -180,6 +183,12 @@ class instituteController{
       createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
         )`)
+        
+      categories.forEach(async (category) => {
+        await sequelize.query(`INSERT INTO category_${instituteNumber} (categoryName, categoryDescription) VALUES (?, ?)`, {
+            replacements: [category.categoryName, category.description]
+        });
+      });
       next()
     }
 }
