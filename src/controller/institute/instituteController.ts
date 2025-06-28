@@ -159,7 +159,7 @@ class instituteController{
         courseThumbnail VARCHAR(200),
         courseDescription TEXT,
         categoryId VARCHAR(36) NOT NULL REFERENCES category_${instituteNumber}(id),
-        teacherId VARCHAR(36) NOT NULL REFERENCES teacher_${instituteNumber}(id),
+        teacherId VARCHAR(36)  REFERENCES teacher_${instituteNumber}(id),
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
         updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )`)

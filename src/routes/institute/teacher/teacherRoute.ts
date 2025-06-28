@@ -12,5 +12,6 @@ router.route("/")
 .post(catchAsync(MiddleWare.isLoggedIn),upload.single("teacherImage"), catchAsync(TeacherController.createTeacher))
 .get(catchAsync(MiddleWare.isLoggedIn), catchAsync(TeacherController.getTeachers))
 router.route("/:id")
+.get(catchAsync(MiddleWare.isLoggedIn), catchAsync(TeacherController.getSingleTeacher))
 .delete(catchAsync(MiddleWare.isLoggedIn), catchAsync(TeacherController.deleteTeacher));
 export default router;

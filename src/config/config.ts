@@ -11,6 +11,8 @@ export const envConfig={
     port:process.env.DB_PORT,
     cloudinaryApiKey:process.env.CLOUDINARY_API_KEY,
     cloudinarySecretKey:process.env.CLOUDINARY_SECRET_KEY,
-    cloudinaryCloudName:process.env.CLOUDINARY_CLOUD_NAME
+    cloudinaryCloudName:process.env.CLOUDINARY_CLOUD_NAME,
+    gmailUser:process.env.GMAIL_USER,
+    gmailPass:process.env.GMAIL_PASS
 
 }

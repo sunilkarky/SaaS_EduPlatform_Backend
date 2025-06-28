@@ -1,74 +1,7 @@
-import { NextFunction, Response } from "express";
-import { IExtendedRequest } from "../../../middleware/type";
-import sequelize from "../../../database/connection";
-import { QueryTypes } from "sequelize";
-import generateRandomPassword from "../../../services/generateRandomPassword";
-import sendMail from "../../../services/sendMail";
-
-
-class TeacherController {
-  //create a new teacher
-  static async createTeacher(req: IExtendedRequest, res: Response, next: NextFunction) {
-    const instituteNumber = req.user?.currentInstituteNumber;
-    if (!req.body) {
-      res.status(400).json({
-        message: "Please provide teacher details in the request body"
-      });
-      return;
-    }
-    
-    if (!req.file) {
-      res.status(400).json({
-        message: "Please upload a teacher image"
-      });
-      return;
-    }
-    const  {teacherName,teacherEmail,teacherPhoneNumber,teacherAddress,teacherExpertise,joinedDate,salary,courseId} = req.body;
-    const teacherImage = req.file?.filename || null;
-    if(!courseId) {
-      res.status(400).json({ message: "Please provide courseId for teacher to teach" });
-      return;
-    }
-    const courseExists = await sequelize.query(`SELECT * FROM course_${instituteNumber} WHERE id = ?`, {
-      type: QueryTypes.SELECT,  
-      replacements: [courseId]
-    });
-    if (!courseExists || courseExists.length === 0) {
-      res.status(404).json({ message: "Course not found with that id" });
-      return;
-    }
-    if(!teacherName || !teacherEmail || !teacherPhoneNumber || !teacherAddress || !teacherExpertise || !joinedDate || !salary || !courseId) {
-      res.status(400).json({ message: "Please provide all required fields teacherName, teacherEmail, teacherPhoneNumber, teacherAddress, teacherExpertise, joinedDate, salary, courseId" });
-      return;
-    }
-    const teacherPasswordData = generateRandomPassword();
-    const teacherPasswordHashed = teacherPasswordData.hashedPassword || null;
-    const teacherPasswordPlain = teacherPasswordData.plainPassword || null;
-
-    const insertedData=await sequelize.query(`INSERT INTO teacher_${instituteNumber}(
-      teacherName, teacherEmail, teacherPhoneNumber, teacherAddress, teacherExpertise, joinedDate, salary, teacherImage, teacherPassword
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, {
-      type: QueryTypes.INSERT,
-      replacements: [teacherName, teacherEmail, teacherPhoneNumber, teacherAddress, teacherExpertise, joinedDate, salary, teacherImage, teacherPasswordHashed]
-    });
-    const teacherData:{id:string}[]=await sequelize.query(`SELECT * FROM teacher_${instituteNumber} WHERE teacherEmail = ?`, {
-      type: QueryTypes.SELECT,
-      replacements: [teacherEmail]
-    });
-    console.log(teacherData)
-    // Link above teacher to coursetable and  update
-    await sequelize.query(`UPDATE course_${instituteNumber} SET teacherId = ? WHERE id = ?`, {
-      type: QueryTypes.UPDATE,
-      replacements: [teacherData[0].id, courseId]
-    });
-
-    //mail the teacher with the password
-   //mail the teacher with the password
+//mail the teacher with the password
 const mailInformation = {
   from: "EduTech Platform<Sunilkarki670@gmail.com>",
   to: teacherEmail,
-  teacherName:teacherName,
-  teacherPasswordPlain:teacherPasswordPlain,
   subject: "🎉 Welcome to EduTech Platform - Your Teaching Journey Begins!",
   html: `
     <!DOCTYPE html>
@@ -254,7 +187,7 @@ const mailInformation = {
                     </a>
                     <p style="font-size: 14px; color: #666; margin-top: 15px;">
                         Need help? Contact our support team at 
-                        <a href="mailto:support@edutech.com" style="color: #667eea;">sunilkarki670@gmail.com</a>
+                        <a href="mailto:support@edutech.com" style="color: #667eea;">support@edutech.com</a>
                     </p>
                 </div>
 
@@ -293,84 +226,3 @@ const mailInformation = {
     </html>
   `
 }
-    await sendMail(mailInformation)
-    res.status(201).json({
-      message: "Teacher created successfully",
-    });
-
-}
-static async getTeachers(req: IExtendedRequest, res: Response) {
-    const instituteNumber = req.user?.currentInstituteNumber;
-    const teachers = await sequelize.query(`SELECT * FROM teacher_${instituteNumber}`, {
-      type: QueryTypes.SELECT
-    });
-    res.status(200).json({
-      message: "Teachers fetched successfully",
-      data: teachers
-    });
-  }
-  static async getSingleTeacher(req: IExtendedRequest, res: Response) {
-    const instituteNumber = req.user?.currentInstituteNumber;
-    const teacherId = req.params.id;
-    if (!teacherId) {
-      res.status(400).json({
-        message: "Please provide teacher ID in the request parameters"
-      });
-      return;
-    }
-    const teacher = await sequelize.query(`SELECT * FROM teacher_${instituteNumber} WHERE id = ?`, {
-      type: QueryTypes.SELECT,
-      replacements: [teacherId]
-    });
-    if (!teacher || teacher.length === 0) {
-      res.status(404).json({
-        message: "No teacher found with that ID"
-      });
-      return;
-    }
-    res.status(200).json({
-      message: "Teacher fetched successfully",
-      data: teacher[0]
-    });
-  }
-  static async deleteTeacher(req: IExtendedRequest, res: Response) {
-    const instituteNumber = req.user?.currentInstituteNumber;
-    const teacherId = req.params.id;
-    if(!teacherId) {
-      res.status(400).json({
-        message: "Teacher ID is required"
-      });
-      return;
-    }
-    const teacherExists = await sequelize.query(`SELECT * FROM teacher_${instituteNumber} WHERE id = ?`, {
-      type: QueryTypes.SELECT,
-      replacements: [teacherId]
-    });
-    if (!teacherExists || teacherExists.length === 0) {
-      res.status(404).json({
-        message: "Teacher not found"
-      });
-      return;
-    }
-
-    await sequelize.query(`DELETE FROM teacher_${instituteNumber} WHERE id = ?`, {
-      type: QueryTypes.DELETE,
-      replacements: [teacherId]
-    });
-    res.status(200).json({
-      message: "Teacher deleted successfully"
-    });
-  }
-  static async deleteAllTeachers(req: IExtendedRequest, res: Response) {
-    const instituteNumber = req.user?.currentInstituteNumber;
-    await sequelize.query(`DELETE FROM teacher_${instituteNumber}`, {
-      type: QueryTypes.DELETE
-    });
-    res.status(200).json({
-      message: "All teachers deleted successfully"
-    }); 
-  }
- 
-}
-
-export default TeacherController;

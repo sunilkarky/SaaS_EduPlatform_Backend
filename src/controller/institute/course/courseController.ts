@@ -21,9 +21,15 @@ class courseController{
         return
       }
         const {courseName,coursePrice,courseDuration,courseLevel,courseDescription,categoryId}=req.body
-        if(!courseName || !coursePrice || !courseDuration || !courseLevel || !courseDescription || !categoryId){
+        if(!courseName || !coursePrice || !courseDuration || !courseLevel || !courseDescription){
             res.status(400).json({
                 message:"Please provide all fields: courseName, coursePrice, courseDuration, courseLevel, courseDescription, categoryId"
+            })
+            return
+        }
+        if(!categoryId){
+            res.status(400).json({
+                message:"Please create course first and provide categoryId"
             })
             return
         }
@@ -42,10 +48,17 @@ class courseController{
     }
     static async getAllCourses(req:IExtendedRequest,res:Response){
         const instituteNumber = req.user?.currentInstituteNumber;
-        const courses = await sequelize.query(`SELECT * FROM course_${instituteNumber}  JOIN category_${instituteNumber} ON course_${instituteNumber}.categoryId =  category_${instituteNumber}.id `,{
-            type: QueryTypes.SELECT
+        const courses = await sequelize.query(`
+            SELECT c.*, cat.categoryName, cat.categoryDescription 
+            FROM course_${instituteNumber} c 
+            LEFT JOIN category_${instituteNumber} cat ON c.categoryId = cat.id
+        `,{type: QueryTypes.SELECT});
+        if(courses.length==0){
+            res.status(404).json({
+                message:"No courses found "
+            });
+            return;
         }
-        );
         res.status(200).json({
             message: "Courses fetched successfully",
             data: courses
@@ -61,7 +74,7 @@ class courseController{
             return
         }
         //check course exists
-        const courseExist=await sequelize.query(`SELECT * FROM COURSE_${instituteNumber} WHERE id=?`,{
+        const courseExist=await sequelize.query(`SELECT * FROM course_${instituteNumber} WHERE id=?`,{
             type:QueryTypes.SELECT,
             replacements:[courseId]
         })
@@ -72,7 +85,7 @@ class courseController{
             return
         }
         res.status(200).json({
-            message:"Single user fetched success",
+            message:"Single course fetched success",
             data:courseExist
         })
     }
