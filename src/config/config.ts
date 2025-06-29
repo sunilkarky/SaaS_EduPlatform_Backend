@@ -12,7 +12,11 @@ export const envConfig={
     cloudinaryApiKey:process.env.CLOUDINARY_API_KEY,
     cloudinarySecretKey:process.env.CLOUDINARY_SECRET_KEY,
     cloudinaryCloudName:process.env.CLOUDINARY_CLOUD_NAME,
+    // Email configuration
     gmailUser:process.env.GMAIL_USER,
-    gmailPass:process.env.GMAIL_PASS
+    gmailPass:process.env.GMAIL_PASS,
+    // JWT configuration
+    jwtSecretKey:process.env.JWT_SECRET_KEY,
+    jwtExpire:process.env.JWT_EXPIRE
 
 }

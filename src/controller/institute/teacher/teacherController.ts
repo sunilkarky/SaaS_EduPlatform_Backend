@@ -67,8 +67,6 @@ class TeacherController {
 const mailInformation = {
   from: "EduTech Platform<Sunilkarki670@gmail.com>",
   to: teacherEmail,
-  teacherName:teacherName,
-  teacherPasswordPlain:teacherPasswordPlain,
   subject: "🎉 Welcome to EduTech Platform - Your Teaching Journey Begins!",
   html: `
     <!DOCTYPE html>
@@ -216,6 +214,7 @@ const mailInformation = {
                     <div style="font-size: 32px; margin-bottom: 15px;">🔐</div>
                     <h3 style="margin: 0 0 10px 0;">Your Login Credentials</h3>
                     <p style="margin: 10px 0; opacity: 0.9;">
+                    <strong> Institute Number:</strong> ${instituteNumber}<br>
                         <strong>📧 Email:</strong> ${teacherEmail}
                     </p>
                     <p style="margin: 10px 0; opacity: 0.9;"><strong>🔑 Temporary Password:</strong></p>

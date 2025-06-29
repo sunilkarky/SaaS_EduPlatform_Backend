@@ -13,5 +13,9 @@ router.route("/").post(
     catchAsync(instituteController.createCategory),
     catchAsync(instituteController.createCourse)
 )
+.get(
+    catchAsync(MiddleWare.isLoggedIn),
+    catchAsync(instituteController.getUserInstitutes)
+)
 
 export default router

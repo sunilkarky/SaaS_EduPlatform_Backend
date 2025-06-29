@@ -4,6 +4,7 @@ import { Request, Response } from 'express'
 import User from '../../../database/models/user.model'
 import bcrypt from "bcrypt"
 import jwt from 'jsonwebtoken'
+import generateJwtToken from '../../../services/generateJwtToken'
 
 class AuthController{
     static async registerUser (req:Request,res:Response){
@@ -74,12 +75,11 @@ class AuthController{
             })
             return
         }
-         const token =  jwt.sign({id :userExist[0].id},'iamsecretkey',{
-            expiresIn : "30d"
-           })
-            res.status(200).json({
-                token : token, 
-                message : "Logged in success"
+         const token=generateJwtToken({id:userExist[0].id})
+         console.log(token)
+         res.status(200).json({
+                token : token,
+                message : "Logged in successfully"
             })
     }
 }

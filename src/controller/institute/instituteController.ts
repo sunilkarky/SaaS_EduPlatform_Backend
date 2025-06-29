@@ -4,6 +4,7 @@ import generateRandomNumber from '../../services/randomNumberGenerate'
 import { IExtendedRequest } from "../../middleware/type"
 import User from "../../database/models/user.model"
 import { categories } from "../../seed"
+import { QueryTypes } from "sequelize"
 
 
 
@@ -190,6 +191,28 @@ class instituteController{
         });
       });
       next()
+    }
+    static async getUserInstitutes(req:IExtendedRequest,res:Response){
+      const userId=req.user?.id;
+      if(!userId){
+        res.status(400).json({
+          message:"Please provide userId"
+        })
+        return
+      }
+      const institutes=await sequelize.query(`SELECT * FROM user_institute WHERE userId=?`,{
+        type:QueryTypes.SELECT,
+        replacements:[userId]
+      })
+      if(institutes.length===0){
+        res.status(404).json({
+          message:"No institutes found for this user"
+        })
+        return
+      }
+      res.status(200).json({
+        institutes:institutes
+      })
     }
 }
 export default instituteController
